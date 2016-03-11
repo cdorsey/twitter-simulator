@@ -3,9 +3,6 @@ import requests
 import sys
 from requests_oauthlib import OAuth1
 
-KEY_WORD = "whoami"
-
-
 def get_auth():
     try:
         with open('keys.json') as key_file:
@@ -31,19 +28,7 @@ def get_auth():
     if not valid.ok:
         twitter_error(content['errors'][0]['code'], content['errors'][0]['message'], True)
 
-    bot_name = content['screen_name']
-
-    stream_url = "https://stream.twitter.com/1.1/statuses/filter.json"
-    request = requests.post(stream_url, data='track={0}%20{1}'.format(bot_name, KEY_WORD), auth=auth, stream=True)
-
-    if not request.ok:
-        try:
-            error = request.json()
-            twitter_error(error['errors'][0]['code'], error['errors'][0]['message'], True)
-        except ValueError:
-            twitter_error(None, request.content.decode('utf-8'), True)
-
-    return request
+    return auth
 
 
 def twitter_error(code, msg, fatal=False):
