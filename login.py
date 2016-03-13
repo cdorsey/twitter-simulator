@@ -3,6 +3,7 @@ import requests
 import sys
 from requests_oauthlib import OAuth1
 
+
 def get_auth():
     try:
         with open('keys.json') as key_file:
@@ -27,6 +28,8 @@ def get_auth():
     content = json.loads(valid.content.decode("utf-8"))
     if not valid.ok:
         twitter_error(content['errors'][0]['code'], content['errors'][0]['message'], True)
+
+    valid.close()
 
     return auth
 
