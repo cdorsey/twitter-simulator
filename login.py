@@ -5,6 +5,12 @@ from requests_oauthlib import OAuth1
 
 
 def get_auth():
+    """
+    Builds and validates an OAuth1 object that can be used to authenticate with the Twitter API. Keys are retrieved
+    from keys.json. See README for more info
+
+    :return: OAuth1 object
+    """
     try:
         with open('keys.json') as key_file:
             key = json.load(key_file)
@@ -35,6 +41,14 @@ def get_auth():
 
 
 def twitter_error(code, msg, fatal=False):
+    """
+    Helper function to report errors returned by Twitter
+
+    :param code: Numerical code of the error returned by Twitter
+    :param msg: Error string
+    :param fatal: Should this error stop the program from running? (Yes = True, No = False), default: False
+    :return:
+    """
     print('Twitter returned an error: {0} (Code {1})'.format(msg, code), file=sys.stderr)
     if fatal:
         sys.exit(1)
