@@ -6,13 +6,14 @@ Requires an account to send users back their formed tweets. Bot is activated whe
 
 ## Authorization
 In order to authenticate with Twitter's API, create a file called keys.json in the following format:
-  {
-	  "consumer":{
-		  "key":"ConsumerKey",
-		  "secret":"ConsumerSecret"
-	  },
-	  "access_token":{
-		  "key":"Access Key",
-		  "secret":"Access Secret"
-	  }
-  }
+
+    {
+       "consumer":{
+          "key":"ConsumerKey",
+          "secret":"ConsumerSecret"
+       },
+       "access_token":{
+          "key":"Access Key",
+          "secret":"Access Secret"
+       }
+    }
