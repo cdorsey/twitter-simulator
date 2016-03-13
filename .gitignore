@@ -64,5 +64,6 @@ target/
 #Pycharm data directory
 .idea
 
-#Key file
-keys.json
+#Data files
+/keys.json
+/name.txt
