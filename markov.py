@@ -73,7 +73,7 @@ def reply_tweet(user, tweet, auth, id):
 def start_stream():
     """
     This function starts the stream for listening for user interactions. Any tweet mentioning the bot's name (defined
-    in name.txt) and a keyword (defined at the top of main.py) will be passed into the processing function
+    in name.txt) and a keyword (defined at the top of markov.py) will be passed into the processing function
     :return:
     """
     auth = login.get_auth()
