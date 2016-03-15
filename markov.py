@@ -6,7 +6,6 @@ from multiprocessing import Process
 import markovify
 import login
 import tweepy
-from TriggerStreamListener import TriggerStreamListener
 
 KEY_WORD = 'whoami'
 
@@ -48,25 +47,23 @@ def process_user(user, api, tweet_id):
 
     response = text_model.make_short_sentence(120)
 
-    reply_tweet(user, response, auth, tweet_id)
+    reply_tweet(user, response, api, tweet_id)
 
 
-def reply_tweet(user, tweet, auth, id):
+def reply_tweet(user, tweet, api, id):
     """
     This function builds and sends the response tweet containing the markov string via a reply tweet
 
     :param user: Screen name of the user to send the tweet to
     :param tweet: Contents of the tweet to send
-    :param auth: OAuth1 object to authenticate with Twitter's API
+    :param api: Tweepy API wrapper
     :param id: Tweet ID of the tweet to reply to
-    :return:
+    :return: Tweepy Status object containing sent tweet
     """
-    url = "https://api.twitter.com/1.1/statuses/update.json"
 
     full_tweet = "@" + user + " " + tweet
 
-    request = requests.post(url, data={'status': full_tweet, 'in_reply_to_status_id': id}, auth=auth)
-    request.close()
+    return api.update_status(full_tweet, in_reply_to_status_id=id)
 
 
 def start_stream():
