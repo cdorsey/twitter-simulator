@@ -1,7 +1,7 @@
 import json
 import requests
 import sys
-from requests_oauthlib import OAuth1
+import tweepy
 
 
 def get_auth():
@@ -9,7 +9,7 @@ def get_auth():
     Builds and validates an OAuth1 object that can be used to authenticate with the Twitter API. Keys are retrieved
     from keys.json. See README for more info
 
-    :return: OAuth1 object
+    :return: Tweepy OAuthHandler
     """
     try:
         with open('keys.json') as key_file:
@@ -25,17 +25,8 @@ def get_auth():
     except KeyError:
         sys.exit("Key file format is incorrect. See README.md for more information")
 
-    validate_url = "https://api.twitter.com/1.1/account/verify_credentials.json"
-
-    auth = OAuth1(consumer_key, client_secret=consumer_secret, resource_owner_key=access_key,
-                  resource_owner_secret=access_secret)
-
-    valid = requests.get(validate_url, auth=auth)
-    content = json.loads(valid.content.decode("utf-8"))
-    if not valid.ok:
-        twitter_error(content['errors'][0]['code'], content['errors'][0]['message'], True)
-
-    valid.close()
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    auth.set_access_token(access_key, access_secret)
 
     return auth
 
