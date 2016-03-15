@@ -5,31 +5,30 @@ import requests
 from multiprocessing import Process
 import markovify
 import login
+import tweepy
+from TriggerStreamListener import TriggerStreamListener
 
 KEY_WORD = 'whoami'
 
 
-def process_user(user, auth, tweet_id):
+def process_user(user, api, tweet_id):
     """
     This function is the workhorse which retreives the user's timeline, formats it into a format acceptable to the
     markovify library, and retrieves the resulting string from markovify, which is then passed on to the reply_tweet()
     function
 
     :param user: Screen name of user to be processed
-    :param auth: OAuth1 object to authenticate with Twitter's API
+    :param api: Tweepy API wrapper
     :param tweet_id: ID of the tweet that invoked the process
     :return:
     """
     raw_text = ""
-    url = "https://api.twitter.com/1.1/statuses/user_timeline.json"
-    tweets = requests.get(url, params={'screen_name': user, 'count': 200, 'exclude_replies': True,
-                                       'include_rts': False}, auth=auth)
 
-    for tweet in tweets.json():
-        raw_text += tweet['text']
+    tweets = api.user_timeline(screen_name=user, count=200)
+
+    for tweet in tweets:
+        raw_text += tweet.text
         raw_text += " "
-
-    tweets.close()
 
     # Filter out emoji
     try:
@@ -77,32 +76,12 @@ def start_stream():
     :return:
     """
     auth = login.get_auth()
+    api = tweepy.API(auth)
 
-    stream_url = "https://stream.twitter.com/1.1/statuses/filter.json"
-    stream = requests.post(stream_url, data={'track': '{0} {1}'.format(BOT_NAME, KEY_WORD)}, auth=auth, stream=True)
+    listener = TriggerStreamListener(api)
+    stream = tweepy.Stream(auth = api.auth, listener=listener())
 
-    if not stream.ok:
-        try:
-            error = stream.json()
-            login.twitter_error(error['errors'][0]['code'], error['errors'][0]['message'], True)
-        except ValueError:
-            login.twitter_error(None, stream.content.decode('utf-8'), True)
-
-    try:
-        for line in stream.iter_lines():
-            if line:
-                try:
-                    json_obj = json.loads(line.decode('utf-8'))
-                    user = json_obj['user']['screen_name']
-                    tweet_id = json_obj['id']
-                    print("Analyzing {0}...".format(user))
-                    process_user(user, auth, tweet_id)
-                except ValueError:
-                    print("Error was encountered processing the following:\n\t{0}".format(line.decode('utf-8')),
-                          file=sys.stderr)
-                    pass
-    except SystemExit:
-        stream.close()
+    stream.filter(track='{0} {1}'.format(BOT_NAME, KEY_WORD))
 
 
 if __name__ == "__main__":
