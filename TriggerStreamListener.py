@@ -1,6 +1,5 @@
 import time
 from tweepy import StreamListener
-
 import markov
 
 
