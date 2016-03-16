@@ -69,17 +69,16 @@ def reply_tweet(user, tweet, auth, id):
     request = requests.post(url, data={'status': full_tweet, 'in_reply_to_status_id': id}, auth=auth)
     request.close()
 
-
 def start_stream():
     """
     This function starts the stream for listening for user interactions. Any tweet mentioning the bot's name (defined
     in name.txt) and a keyword (defined at the top of main.py) will be passed into the processing function
     :return:
     """
-    auth = login.get_auth()
-
+    auth = tweepy.OAuthHandler()
     stream_url = "https://stream.twitter.com/1.1/statuses/filter.json"
     stream = requests.post(stream_url, data={'track': '{0} {1}'.format(BOT_NAME, KEY_WORD)}, auth=auth, stream=True)
+
 
     if not stream.ok:
         try:
@@ -101,11 +100,12 @@ def start_stream():
                     print("Error was encountered processing the following:\n\t{0}".format(line.decode('utf-8')),
                           file=sys.stderr)
                     pass
-    except SystemExit:
+    finally:
         stream.close()
 
 
 if __name__ == "__main__":
     with open("name.txt") as name_file:
         BOT_NAME = re.sub(r"\n", "", name_file.read())
+
     start_stream()

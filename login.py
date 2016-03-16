@@ -1,7 +1,8 @@
 import json
-import requests
 import sys
-from requests_oauthlib import OAuth1
+
+import requests
+import tweepy
 
 
 def get_auth():
@@ -27,8 +28,7 @@ def get_auth():
 
     validate_url = "https://api.twitter.com/1.1/account/verify_credentials.json"
 
-    auth = OAuth1(consumer_key, client_secret=consumer_secret, resource_owner_key=access_key,
-                  resource_owner_secret=access_secret)
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
 
     valid = requests.get(validate_url, auth=auth)
     content = json.loads(valid.content.decode("utf-8"))
