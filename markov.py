@@ -1,13 +1,6 @@
-import json
 import re
-import sys
-import requests
-from multiprocessing import Process
 import markovify
-import login
 import tweepy
-
-KEY_WORD = 'whoami'
 
 
 def process_user(user, api, tweet_id):
@@ -64,24 +57,3 @@ def reply_tweet(user, tweet, api, id):
     full_tweet = "@" + user + " " + tweet
 
     return api.update_status(full_tweet, in_reply_to_status_id=id)
-
-
-def start_stream():
-    """
-    This function starts the stream for listening for user interactions. Any tweet mentioning the bot's name (defined
-    in name.txt) and a keyword (defined at the top of markov.py) will be passed into the processing function
-    :return:
-    """
-    auth = login.get_auth()
-    api = tweepy.API(auth)
-
-    listener = TriggerStreamListener(api)
-    stream = tweepy.Stream(auth = api.auth, listener=listener())
-
-    stream.filter(track='{0} {1}'.format(BOT_NAME, KEY_WORD))
-
-
-if __name__ == "__main__":
-    with open("name.txt") as name_file:
-        BOT_NAME = re.sub(r"\n", "", name_file.read())
-    start_stream()
