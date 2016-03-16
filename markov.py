@@ -3,12 +3,13 @@ import markovify
 import tweepy
 
 
-def process_user(user, api, tweet_id):
+def process_user(user, api, tweet_id, simulate=False):
     """
     This function is the workhorse which retreives the user's timeline, formats it into a format acceptable to the
     markovify library, and retrieves the resulting string from markovify, which is then passed on to the reply_tweet()
     function
 
+    :param simulate: If true, do everything but send the reply tweet
     :param user: Screen name of user to be processed
     :param api: Tweepy API wrapper
     :param tweet_id: ID of the tweet that invoked the process
@@ -40,7 +41,7 @@ def process_user(user, api, tweet_id):
 
     response = text_model.make_short_sentence(120)
 
-    reply_tweet(user, response, api, tweet_id)
+    return reply_tweet(user, response, api, tweet_id)
 
 
 def reply_tweet(user, tweet, api, id):
