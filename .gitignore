@@ -62,7 +62,6 @@ target/
 .ipynb_checkpoints
 
 #Pycharm data directory
-/Tests
 .idea
 
 #Data files
