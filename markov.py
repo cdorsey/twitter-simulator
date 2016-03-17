@@ -13,7 +13,8 @@ def process_user(user, api, tweet_id, simulate=False):
     :param user: Screen name of user to be processed
     :param api: Tweepy API wrapper
     :param tweet_id: ID of the tweet that invoked the process
-    :return:
+    :return: If simulate is False, returns Status object for the sent tweet, else returns the string of the tweet that
+        would have been sent.
     """
     raw_text = ""
 
@@ -41,10 +42,10 @@ def process_user(user, api, tweet_id, simulate=False):
 
     response = text_model.make_short_sentence(120)
 
-    return reply_tweet(user, response, api, tweet_id)
+    return reply_tweet(user, response, api, tweet_id, simulate)
 
 
-def reply_tweet(user, tweet, api, id):
+def reply_tweet(user, tweet, api, id, simulate=False):
     """
     This function builds and sends the response tweet containing the markov string via a reply tweet
 
@@ -52,9 +53,13 @@ def reply_tweet(user, tweet, api, id):
     :param tweet: Contents of the tweet to send
     :param api: Tweepy API wrapper
     :param id: Tweet ID of the tweet to reply to
-    :return: Tweepy Status object containing sent tweet
+    :return: If simulate is False, returns Status object for the sent tweet, else returns the string of the tweet that
+        would have been sent.
     """
 
     full_tweet = "@" + user + " " + tweet
 
-    return api.update_status(full_tweet, in_reply_to_status_id=id)
+    if not simulate:
+        return api.update_status(full_tweet, in_reply_to_status_id=id)
+    else:
+        return full_tweet
