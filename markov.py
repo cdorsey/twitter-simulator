@@ -18,25 +18,11 @@ def process_user(user, api, tweet_id, simulate=False):
     """
     raw_text = ""
 
-    tweets = api.user_timeline(screen_name=user, count=200)
+    tweets = api.user_timeline(screen_name=user, count=3200)
 
-    for tweet in tweets:
-        raw_text += tweet.text
+    for tweet in process_tweets(tweets):
+        raw_text += tweet
         raw_text += " "
-
-    # Filter out emoji
-    try:
-        # UCS-4
-        highpoints = re.compile(u'[\U00010000-\U0010ffff]')
-    except re.error:
-        # UCS-2
-        highpoints = re.compile(u'[\uD800-\uDBFF][\uDC00-\uDFFF]')
-
-    raw_text = highpoints.sub('', raw_text)
-
-    # Filter out newline and links
-    raw_text = re.sub(r'\n', " ", raw_text)
-    raw_text = re.sub(r'https://t.co/([A-Za-z0-9]{10})', "", raw_text)
 
     text_model = markovify.Text(raw_text)
 
@@ -44,6 +30,30 @@ def process_user(user, api, tweet_id, simulate=False):
 
     return reply_tweet(user, response, api, tweet_id, simulate)
 
+def process_tweets(tweets):
+    for tweet in tweets:
+        # Filter out emoji
+        try:
+            # UCS-4
+            highpoints = re.compile(u'[\U00010000-\U0010ffff]')
+        except re.error:
+            # UCS-2
+            highpoints = re.compile(u'[\uD800-\uDBFF][\uDC00-\uDFFF]')
+
+        raw_text = highpoints.sub('', tweet.text)
+
+        # Filter out newline and links
+        raw_text = re.sub(r'\n', " ", raw_text)
+        raw_text = re.sub(r'https://t.co/([A-Za-z0-9]{10})', "", raw_text)
+
+        # Remove old-style retweets
+        raw_text = re.sub(r'RT @(.*)\Z', "", raw_text)
+
+        # Fix mutliple spaces and remove trailing spaces
+        raw_text = re.sub(r'\s{2,}', " ", raw_text)
+        raw_text = re.sub(r'\s+\Z', "", raw_text)
+
+        yield raw_text
 
 def reply_tweet(user, tweet, api, id, simulate=False):
     """
