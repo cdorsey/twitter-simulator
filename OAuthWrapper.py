@@ -4,7 +4,7 @@ from io import TextIOWrapper
 import tweepy
 
 
-class OAuthWrapper(object):
+class OAuthWrapper(tweepy.OAuthHandler):
     def __init__(self, keys=None, file_name=None, file_obj=None):
         if keys is not None and isinstance(keys, dict):
             self._set_keys(keys)
@@ -16,6 +16,12 @@ class OAuthWrapper(object):
             raise ValueError("Invalid parameters for OAuthWrapper")
 
     def _set_keys(self, keys):
+        # Define properties for compatibility with super class
+        self.consumer_key = keys['consumer_key']
+        self.consumer_secret = keys['consumer_secret']
+        self.access_token = keys['access_key']
+        self.access_token_secret = keys['access_secret']
+
         self._keys = keys
 
     def _set_keys_file_obj(self, file_obj):
