@@ -38,3 +38,6 @@ class OAuthWrapperTest(unittest.TestCase):
         obj = OAuthWrapper(keys=self.keys)
 
         self.assertIsInstance(obj.get_auth(), tweepy.OAuthHandler)
+
+if __name__ == '__main__':
+    unittest.main()
