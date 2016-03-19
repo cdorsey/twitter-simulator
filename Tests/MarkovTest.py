@@ -24,7 +24,7 @@ class MarkovTest(unittest.TestCase):
         auth = OAuthWrapper(keys=self.keys)
         self.api = tweepy.API(auth)
 
-        self.test_user = 'chaseeatsworlds'
+        self.test_user = ''
 
 
 if __name__ == '__main__':
