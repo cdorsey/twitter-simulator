@@ -1,5 +1,5 @@
 import re
-import markovify
+from POSifiedText import POSifiedText
 import tweepy
 
 
@@ -24,7 +24,9 @@ def process_user(user, api, tweet_id, simulate=False):
         raw_text += tweet
         raw_text += " "
 
-    text_model = markovify.Text(raw_text)
+    raw_text += "\b"
+
+    text_model = POSifiedText(raw_text)
 
     response = text_model.make_short_sentence(120)
 
@@ -46,14 +48,20 @@ def process_tweets(tweets):
         raw_text = re.sub(r'\n', " ", raw_text)
         raw_text = re.sub(r'https://t.co/([A-Za-z0-9]{10})', "", raw_text)
 
-        # Remove old-style retweets
+        # Remove old-style retweets and mentions
         raw_text = re.sub(r'RT @(.*)\Z', "", raw_text)
+        raw_text = re.sub(r'@\w{1,15}', "", raw_text)
 
         # Fix mutliple spaces and remove trailing spaces
         raw_text = re.sub(r'\s{2,}', " ", raw_text)
-        raw_text = re.sub(r'\s+\Z', "", raw_text)
+        raw_text = re.sub(r'\s+$', "", raw_text)
 
-        yield raw_text
+        # Filter out tweets that are now empty because of the filters
+        if not re.match(r'^\s*$', raw_text):
+            if not re.match(r'.*[.?!]$', raw_text):
+                raw_text += "."
+
+            yield raw_text
 
 def reply_tweet(user, tweet, api, id, simulate=False):
     """

@@ -1,14 +1,14 @@
 import json
-from io import TextIOWrapper
 
 import tweepy
 
 
+# noinspection PyMissingConstructor
 class OAuthWrapper(tweepy.OAuthHandler):
     def __init__(self, keys=None, file_name=None, file_obj=None):
         if keys is not None and isinstance(keys, dict):
             self._set_keys(keys)
-        elif file_obj is not None and isinstance(file_obj, TextIOWrapper):
+        elif file_obj is not None:
             self._set_keys_file_obj(file_obj)
         elif file_name is not None and isinstance(file_name, str):
             self._set_keys_file_name(file_name)

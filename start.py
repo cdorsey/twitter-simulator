@@ -1,6 +1,5 @@
 import re
 import tweepy
-import login
 from TriggerStreamListener import TriggerStreamListener
 
 KEY_WORD = 'whoami'
@@ -24,6 +23,6 @@ def start_stream():
 
 if __name__ == "__main__":
     with open("name.txt") as name_file:
-        BOT_NAME = re.sub(r"\n", "", name_file.read())
+        BOT_NAME = re.sub(r'\n', "", name_file.read())
     start_stream()
 

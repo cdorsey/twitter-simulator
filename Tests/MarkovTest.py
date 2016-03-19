@@ -7,7 +7,7 @@ from OAuthWrapper import OAuthWrapper
 
 class MarkovTest(unittest.TestCase):
     def test_process_user_with_simulate(self):
-        status = markov.process_user('chaseeatsworlds', self.api, None, simulate=True)
+        status = markov.process_user(self.test_user, self.api, None, simulate=True)
         self.assertIsInstance(status, str)
 
         print(status)
@@ -24,6 +24,7 @@ class MarkovTest(unittest.TestCase):
         auth = OAuthWrapper(keys=self.keys)
         self.api = tweepy.API(auth)
 
+        self.test_user = 'chaseeatsworlds'
 
 
 if __name__ == '__main__':
